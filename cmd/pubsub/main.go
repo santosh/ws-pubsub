@@ -41,10 +41,8 @@ func WsHandler(w http.ResponseWriter, r *http.Request) {
 			log.Println(err)
 			return
 		}
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			log.Println(err)
-			return
-		}
+
+		ps.HandleReceiveMessage(client, messageType, p)
 	}
 }
 
