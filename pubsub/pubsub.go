@@ -38,14 +38,37 @@ func (p *PubSub) AddClient(c Client) {
 	p.Clients = append(p.Clients, c)
 }
 
+func (p *PubSub) GetSubscription(topic string, client *Client) []Subscription {
+	var subscriptionList []Subscription
+
+	for _, subscription := range p.Subscriptions {
+		if client != nil {
+			if subscription.Client.Id == client.Id {
+				subscriptionList = append(subscriptionList, subscription)
+			}
+		} else {
+			if subscription.Topic == topic {
+				subscriptionList = append(subscriptionList, subscription)
+			}
+		}
+	}
+
+	return subscriptionList
+}
+
 func (p *PubSub) Subscribe(client *Client, topic string) *PubSub {
+	clientSubs := p.GetSubscription(topic, client)
+	if len(clientSubs) > 0 {
+		return p
+	}
+
 	newSubscription := Subscription{
 		Topic:  topic,
 		Client: client,
 	}
 
 	p.Subscriptions = append(p.Subscriptions, newSubscription)
-
+	log.Printf("%s subscribed to %s", client.Id, topic)
 	return p
 }
 
@@ -62,7 +85,6 @@ func (p *PubSub) HandleReceiveMessage(c Client, messageType int, payload []byte)
 		log.Println("need to handle publish action")
 	case SUBSCRIBE:
 		p.Subscribe(&c, m.Topic)
-		log.Printf("%s subscribed to %s", c.Id, m.Topic)
 	default:
 		log.Println("unknown action type")
 	}
