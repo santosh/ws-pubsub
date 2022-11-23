@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
@@ -35,11 +34,7 @@ func WsHandler(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		payload := map[string]interface{}{
-			"message": "Hello Go",
-		}
-		w.Header().Set("Content-Type", "application/json")
-		json.NewEncoder(w).Encode(payload)
+		http.ServeFile(w, r, "static")
 	})
 
 	http.HandleFunc("/ws", WsHandler)
