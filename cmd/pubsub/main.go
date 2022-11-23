@@ -40,6 +40,7 @@ func WsHandler(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Println(err)
 			ps.RemoveClient(client)
+			conn.Close()
 			return
 		}
 
