@@ -39,6 +39,7 @@ func WsHandler(w http.ResponseWriter, r *http.Request) {
 		messageType, p, err := conn.ReadMessage()
 		if err != nil {
 			log.Println(err)
+			ps.RemoveClient(client)
 			return
 		}
 

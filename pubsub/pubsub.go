@@ -39,6 +39,22 @@ func (p *PubSub) AddClient(c Client) {
 	p.Clients = append(p.Clients, c)
 }
 
+func (p *PubSub) RemoveClient(c Client) {
+	// first remove all subscriptions by this client
+	for idx, sub := range p.Subscriptions {
+		if c.Id == sub.Client.Id {
+			p.Subscriptions = append(p.Subscriptions[:idx], p.Subscriptions[idx+1:]...)
+		}
+	}
+
+	// remove client from the list
+	for idx, client := range p.Clients {
+		if c.Id == client.Id {
+			p.Clients = append(p.Clients[:idx], p.Clients[idx+1:]...)
+		}
+	}
+}
+
 func (p *PubSub) GetSubscriptions(topic string, client *Client) []Subscription {
 	var subscriptionList []Subscription
 
