@@ -6,7 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
-	"github.com/santosh/pubsub-youtube/pubsub"
+	"github.com/santosh/ws-pubsub/pubsub"
 )
 
 var ps = &pubsub.PubSub{}

@@ -1,4 +1,4 @@
-module github.com/santosh/pubsub-youtube
+module github.com/santosh/ws-pubsub
 
 go 1.19
 
