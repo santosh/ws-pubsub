@@ -13,7 +13,8 @@ const (
 )
 
 type PubSub struct {
-	Clients []Client
+	Clients       []Client
+	Subscriptions []Subscription
 }
 
 type Client struct {
@@ -27,9 +28,25 @@ type Message struct {
 	Message json.RawMessage `json:"message"`
 }
 
+type Subscription struct {
+	Topic  string
+	Client *Client
+}
+
 // AddClient adds a client to PubSub instance
 func (p *PubSub) AddClient(c Client) {
 	p.Clients = append(p.Clients, c)
+}
+
+func (p *PubSub) Subscribe(client *Client, topic string) *PubSub {
+	newSubscription := Subscription{
+		Topic:  topic,
+		Client: client,
+	}
+
+	p.Subscriptions = append(p.Subscriptions, newSubscription)
+
+	return p
 }
 
 // HandleReceiveMessage fetches message and acts based on Action of the Message
@@ -44,7 +61,8 @@ func (p *PubSub) HandleReceiveMessage(c Client, messageType int, payload []byte)
 	case PUBLISH:
 		log.Println("need to handle publish action")
 	case SUBSCRIBE:
-		log.Println("need to handle subscribe action")
+		p.Subscribe(&c, m.Topic)
+		log.Printf("%s subscribed to %s", c.Id, m.Topic)
 	default:
 		log.Println("unknown action type")
 	}
