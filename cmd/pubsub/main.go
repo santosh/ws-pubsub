@@ -4,12 +4,21 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"github.com/santosh/pubsub-youtube/pubsub"
 )
+
+var ps = &pubsub.PubSub{}
 
 var upgrader = websocket.Upgrader{
 	ReadBufferSize:  1024,
 	WriteBufferSize: 1024,
+}
+
+func newUUID() string {
+	uuid := uuid.New()
+	return uuid.String()
 }
 
 func WsHandler(w http.ResponseWriter, r *http.Request) {
@@ -18,6 +27,13 @@ func WsHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+
+	client := pubsub.Client{
+		Id:         newUUID(),
+		Connection: conn,
+	}
+
+	ps.AddClient(client)
 
 	for {
 		messageType, p, err := conn.ReadMessage()
