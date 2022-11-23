@@ -72,6 +72,15 @@ func (p *PubSub) Subscribe(client *Client, topic string) *PubSub {
 	return p
 }
 
+func (p *PubSub) Publish(topic string, message []byte, excludeClient *Client) *PubSub {
+	subscriptions := p.GetSubscription(topic, nil)
+	for _, sub := range subscriptions {
+		sub.Client.Connection.WriteMessage(websocket.TextMessage, message)
+	}
+	log.Printf("published '%s' to %s", message, topic)
+	return p
+}
+
 // HandleReceiveMessage fetches message and acts based on Action of the Message
 func (p *PubSub) HandleReceiveMessage(c Client, messageType int, payload []byte) *PubSub {
 	m := Message{}
@@ -82,7 +91,7 @@ func (p *PubSub) HandleReceiveMessage(c Client, messageType int, payload []byte)
 
 	switch m.Action {
 	case PUBLISH:
-		log.Println("need to handle publish action")
+		p.Publish(m.Topic, m.Message, &c)
 	case SUBSCRIBE:
 		p.Subscribe(&c, m.Topic)
 	default:
